@@ -1,0 +1,11 @@
+package wasmcloud:seismic;
+
+world seismic-handler {
+    // Export the message handler interface
+    export wasmcloud:messaging/handler@0.2.0;
+    
+    // Import necessary interfaces
+    import wasmcloud:keyvalue/store@0.2.0;
+    import wasmcloud:keyvalue/atomics@0.2.0;
+    import wasmcloud:postgres/postgres@0.1.0;
+}

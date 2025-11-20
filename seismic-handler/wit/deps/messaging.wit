@@ -1,0 +1,34 @@
+// Messaging interface definitions for wasmCloud
+
+package wasmcloud:messaging@0.2.0;
+
+interface types {
+    /// A message sent to or received from a broker
+    record broker-message {
+        subject: string,
+        body: list<u8>,
+        reply-to: option<string>,
+    }
+}
+
+interface handler {
+    use types.{broker-message};
+    
+    /// Callback to handle incoming messages
+    handle-message: func(msg: broker-message) -> result<_, string>;
+}
+
+interface consumer {
+    use types.{broker-message};
+    
+    /// Perform a request operation
+    request: func(subject: string, body: list<u8>, timeout-ms: u32) -> result<broker-message, string>;
+    
+    /// Publish a message
+    publish: func(msg: broker-message) -> result<_, string>;
+}
+
+world incoming-handler {
+    export handler;
+    import consumer;
+}

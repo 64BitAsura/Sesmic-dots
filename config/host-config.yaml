@@ -1,0 +1,38 @@
+# wasmCloud Host Configuration
+
+# NATS connection
+nats_url: "nats://localhost:4222"
+nats_jwt: ""
+nats_seed: ""
+
+# Lattice configuration
+lattice_prefix: "default"
+
+# Host configuration
+host_id: ""
+cluster_seed: ""
+cluster_issuers: []
+
+# Provider configuration
+allow_file_load: true
+allowed_insecure: []
+
+# Logging
+enable_structured_logging: false
+log_level: "info"
+
+# OCI Configuration
+oci_allowed_insecure: []
+
+# Control interface
+enable_ipv6: false
+ctl_host: "127.0.0.1"
+ctl_port: 4222
+
+# RPC configuration
+rpc_host: "0.0.0.0"
+rpc_port: 4222
+rpc_timeout_ms: 2000
+
+# Jetstream domain
+js_domain: ""
