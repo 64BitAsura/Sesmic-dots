@@ -1,0 +1,22 @@
+// KeyValue store interface for NATS
+
+package wasmcloud:keyvalue@0.2.0;
+
+interface store {
+    /// Set a key-value pair
+    set: func(key: string, value: list<u8>, expires: u64) -> result<_, string>;
+    
+    /// Get a value by key
+    get: func(key: string) -> result<list<u8>, string>;
+    
+    /// Delete a key
+    delete: func(key: string) -> result<_, string>;
+    
+    /// Check if key exists
+    exists: func(key: string) -> result<bool, string>;
+}
+
+interface atomics {
+    /// Increment a counter
+    increment: func(key: string, value: u64) -> result<u64, string>;
+}

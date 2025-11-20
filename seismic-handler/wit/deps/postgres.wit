@@ -1,0 +1,22 @@
+// PostgreSQL interface for database operations
+
+package wasmcloud:postgres@0.1.0;
+
+interface postgres {
+    /// PostgreSQL value types
+    variant pg-value {
+        text(string),
+        int4(s32),
+        int8(s64),
+        float4(float32),
+        float8(float64),
+        bool(bool),
+        null,
+    }
+    
+    /// Execute a query that doesn't return rows
+    execute: func(query: string, params: list<pg-value>) -> result<u64, string>;
+    
+    /// Query that returns rows
+    query: func(query: string, params: list<pg-value>) -> result<list<list<pg-value>>, string>;
+}

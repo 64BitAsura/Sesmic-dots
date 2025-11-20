@@ -1,0 +1,87 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: seismic-data-collector
+  annotations:
+    description: 'Seismic data collector that connects to EMSC WebSocket feed'
+    version: v0.1.0
+spec:
+  components:
+    - name: seismic-handler
+      type: component
+      properties:
+        image: file://./build/seismic_handler_s.wasm
+      traits:
+        # Connect to WebSocket messaging provider
+        - type: spreadscaler
+          properties:
+            instances: 1
+        
+        # Link to messaging provider (WebSocket)
+        - type: link
+          properties:
+            target: messaging-websocket
+            namespace: wasmcloud
+            package: messaging
+            interfaces:
+              - consumer
+            source_config:
+              - name: websocket-config
+            target_config:
+              - name: websocket-config
+        
+        # Link to NATS KeyValue (objectStore)
+        - type: link
+          properties:
+            target: nats-keyvalue
+            namespace: wasmcloud
+            package: keyvalue
+            interfaces:
+              - store
+            source_config:
+              - name: nats-kv-config
+        
+        # Link to PostgreSQL
+        - type: link
+          properties:
+            target: postgres
+            namespace: wasmcloud
+            package: postgres
+            interfaces:
+              - query
+            target_config:
+              - name: postgres-config
+
+    # WebSocket Messaging Provider
+    - name: messaging-websocket
+      type: capability
+      properties:
+        image: ghcr.io/wasmcloud/messaging-websocket:0.1.0
+        config:
+          - name: websocket-config
+            properties:
+              url: 'wss://www.seismicportal.eu/standing_order/websocket'
+              reconnect: 'true'
+              reconnect_interval_ms: '5000'
+              max_reconnect_attempts: '0'  # 0 = infinite
+
+    # NATS KeyValue Provider (for objectStore)
+    - name: nats-keyvalue
+      type: capability
+      properties:
+        image: ghcr.io/wasmcloud/keyvalue-nats:0.3.0
+        config:
+          - name: nats-kv-config
+            properties:
+              bucket: 'seismic-events'
+              js_domain: ''
+
+    # PostgreSQL Provider
+    - name: postgres
+      type: capability
+      properties:
+        image: ghcr.io/wasmcloud/sqldb-postgres:0.5.0
+        config:
+          - name: postgres-config
+            properties:
+              url: 'postgres://postgres:postgres@localhost:5432/seismic'
